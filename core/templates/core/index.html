@@ -1,0 +1,322 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if profile %}{{ profile.name }} - {{ profile.title }}{% else %}Portfolio{% endif %}</title>
+    <meta name="description" content="{{ profile.bio|truncatechars:160 }}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'core/style.css' %}">
+</head>
+
+<body>
+    <div class="theme-toggle-btn" id="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="#" class="nav__logo">
+                {% if profile %}{{ profile.name|slice:":1" }}.{% else %}P.{% endif %}
+            </a>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="#home" class="nav__link active-link">Home</a></li>
+                    <li class="nav__item"><a href="#about" class="nav__link">About</a></li>
+                    <li class="nav__item"><a href="#skills" class="nav__link">Skills</a></li>
+                    <li class="nav__item"><a href="#experience" class="nav__link">Experience</a></li>
+                    <li class="nav__item"><a href="#projects" class="nav__link">Projects</a></li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Contact</a></li>
+                </ul>
+                <div class="nav__close" id="nav-close">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+
+            <div class="nav__toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <!-- HERO -->
+        <section class="home section" id="home">
+            <div class="home__container container grid">
+                <div class="home__content">
+                    <div class="home__social">
+                        {% if profile.linkedin_link %}
+                        <a href="{{ profile.linkedin_link }}" target="_blank" class="home__social-icon">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        {% endif %}
+                        {% if profile.github_link %}
+                        <a href="{{ profile.github_link }}" target="_blank" class="home__social-icon">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        {% endif %}
+                        <a href="#contact" class="home__social-icon">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+
+                    <div class="home__data">
+                        <h1 class="home__title">Hi, I'm {% if profile %}{{ profile.name }}{% else %}Developer{% endif %}
+                        </h1>
+                        <h3 class="home__subtitle">{% if profile %}{{ profile.title }}{% endif %}</h3>
+                        <p class="home__description">
+                            {% if profile %}{{ profile.bio }}{% else %}Welcome to my portfolio.{% endif %}
+                        </p>
+                        <a href="#contact" class="button button--flex">
+                            Contact Me <i class="fas fa-paper-plane button__icon"></i>
+                        </a>
+                        {% if profile.resume %}
+                        <a href="{{ profile.resume.url }}" target="_blank" class="button button--flex button--ghost">
+                            Download CV <i class="fas fa-download button__icon"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="home__img-wrapper">
+                    {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" alt="Profile" class="home__img">
+                    {% else %}
+                    <div class="home__placeholder"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- SKILLS -->
+        <section class="skills section" id="skills">
+            <h2 class="section__title">Skills</h2>
+            <span class="section__subtitle">My technical level</span>
+
+            <div class="skills__container container grid">
+                {% regroup skills by category as skill_list %}
+                {% for category in skill_list %}
+                <div class="skills__content">
+                    <h3 class="skills__title">{{ category.grouper }}</h3>
+                    <div class="skills__box">
+                        {% for skill in category.list %}
+                        <div class="skills__group">
+                            <div class="skills__data">
+                                <i class="{{ skill.icon_class }}"></i>
+                                <h3 class="skills__name">{{ skill.name }}</h3>
+                                <span class="skills__number">{{ skill.proficiency }}%</span>
+                            </div>
+                            <div class="skills__bar">
+                                <span class="skills__percentage" style="width: {{ skill.proficiency }}%"></span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- EXPERIENCE -->
+        <section class="qualification section" id="experience">
+            <h2 class="section__title">Experience</h2>
+            <span class="section__subtitle">My personal journey</span>
+
+            <div class="qualification__container container">
+                <div class="qualification__sections">
+                    <div class="qualification__content">
+                        {% for exp in experiences %}
+                        <div class="qualification__data">
+                            {% if forloop.counter0|divisibleby:2 %}
+                            <div class="qualification__left">
+                                <h3 class="qualification__title">{{ exp.role }}</h3>
+                                <span class="qualification__subtitle">{{ exp.company }}</span>
+                                <div class="qualification__calendar">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ exp.start_date|date:"Y" }} -
+                                    {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"Y" }}{% endif %}
+                                </div>
+                                <div class="qualification__desc">
+                                    {{ exp.description }}
+                                </div>
+                            </div>
+                            <div>
+                                <span class="qualification__rounder"></span>
+                                <span class="qualification__line"></span>
+                            </div>
+                            {% else %}
+                            <div></div>
+                            <div>
+                                <span class="qualification__rounder"></span>
+                                <span class="qualification__line"></span>
+                            </div>
+                            <div class="qualification__right">
+                                <h3 class="qualification__title">{{ exp.role }}</h3>
+                                <span class="qualification__subtitle">{{ exp.company }}</span>
+                                <div class="qualification__calendar">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ exp.start_date|date:"Y" }} -
+                                    {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"Y" }}{% endif %}
+                                </div>
+                                <div class="qualification__desc">
+                                    {{ exp.description }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section class="projects section" id="projects">
+            <h2 class="section__title">Projects</h2>
+            <span class="section__subtitle">Most recent work</span>
+
+            <div class="projects__container container grid">
+                {% for project in projects %}
+                <div class="project__card">
+                    {% if project.image %}
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="project__img">
+                    {% endif %}
+                    <div class="project__content">
+                        <h3 class="project__title">{{ project.title }}</h3>
+                        <p class="project__description">{{ project.description|truncatechars:100 }}</p>
+                        <div class="project__tags">
+                            <small>{{ project.technologies }}</small>
+                        </div>
+                        <div class="project__links">
+                            {% if project.demo_link %}
+                            <a href="{{ project.demo_link }}" target="_blank" class="button button--small button--link">
+                                Demo <i class="fas fa-arrow-right button__icon"></i>
+                            </a>
+                            {% endif %}
+                            {% if project.github_link %}
+                            <a href="{{ project.github_link }}" target="_blank"
+                                class="button button--small button--link">
+                                GitHub <i class="fab fa-github button__icon"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section class="contact section" id="contact">
+            <h2 class="section__title">Contact Me</h2>
+            <span class="section__subtitle">Get in touch</span>
+
+            <div class="contact__container container grid">
+                <div class="contact__content">
+                    <div class="contact__info">
+                        <div class="contact__card">
+                            <i class="fas fa-envelope contact__card-icon"></i>
+                            <h3 class="contact__card-title">Email</h3>
+                            <span class="contact__card-data">{% if profile %}{{ profile.email }}{% endif %}</span>
+                            <a href="mailto:{% if profile %}{{ profile.email }}{% endif %}" class="contact__button">
+                                Write me <i class="fas fa-arrow-right contact__button-icon"></i>
+                            </a>
+                        </div>
+                        <div class="contact__card">
+                            <i class="fab fa-linkedin contact__card-icon"></i>
+                            <h3 class="contact__card-title">LinkedIn</h3>
+                            <span class="contact__card-data">Connect</span>
+                            {% if profile.linkedin_link %}
+                            <a href="{{ profile.linkedin_link }}" target="_blank" class="contact__button">
+                                Visit <i class="fas fa-arrow-right contact__button-icon"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact__content">
+                    <form action="{% url 'contact' %}" method="POST" class="contact__form">
+                        {% csrf_token %}
+                        <div class="contact__form-div">
+                            <label class="contact__form-tag">Name</label>
+                            <input type="text" name="name" class="contact__form-input" placeholder="Insert your name"
+                                required>
+                        </div>
+                        <div class="contact__form-div">
+                            <label class="contact__form-tag">Mail</label>
+                            <input type="email" name="email" class="contact__form-input" placeholder="Insert your email"
+                                required>
+                        </div>
+                        <div class="contact__form-div">
+                            <label class="contact__form-tag">Subject</label>
+                            <input type="text" name="subject" class="contact__form-input" placeholder="Subject"
+                                required>
+                        </div>
+                        <div class="contact__form-div contact__form-area">
+                            <label class="contact__form-tag">Project</label>
+                            <textarea name="message" cols="30" rows="10" class="contact__form-input"
+                                placeholder="Write your project" required></textarea>
+                        </div>
+                        <button type="submit" class="button button--flex">
+                            Send Message <i class="fas fa-paper-plane button__icon"></i>
+                        </button>
+                    </form>
+                    {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__container container">
+            <h1 class="footer__title">{% if profile %}{{ profile.name }}{% endif %}</h1>
+            <ul class="footer__list">
+                <li><a href="#about" class="footer__link">About</a></li>
+                <li><a href="#projects" class="footer__link">Projects</a></li>
+                <li><a href="#skills" class="footer__link">Skills</a></li>
+            </ul>
+            <div class="footer__social">
+                {% if profile.linkedin_link %}
+                <a href="{{ profile.linkedin_link }}" target="_blank" class="footer__social-link">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                {% endif %}
+                {% if profile.github_link %}
+                <a href="{{ profile.github_link }}" target="_blank" class="footer__social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                {% endif %}
+            </div>
+            <span class="footer__copy">&#169; {% now "Y" %} All rights reserved.</span>
+        </div>
+    </footer>
+
+    <!-- Scroll Up -->
+    <a href="#" class="scrollup" id="scroll-up">
+        <i class="fas fa-arrow-up scrollup__icon"></i>
+    </a>
+
+    <!-- Custom JS -->
+    <script src="{% static 'core/script.js' %}"></script>
+</body>
+
+</html>
